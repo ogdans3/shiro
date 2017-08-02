@@ -1,4 +1,4 @@
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -std=c++14
 CC = g++
 
 main: shiro.cpp

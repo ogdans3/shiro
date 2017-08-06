@@ -28,6 +28,13 @@ void Game::init(std::string moves) {
 	std::cout << "MOVES" << std::endl;
 	std::cout << moves << std::endl;
 
-	std::vector<std::string> singleMoves = split(moves, "(?!([0-9]+\\.))[a-zA-Z0-9]+ [a-zA-Z0-9]+");
 	this -> board.init();
+
+	std::vector<std::string> singleMoves = split(moves, "(?!([0-9]+\\.))[a-zA-Z0-9+#=-]+");
+	for(uint i = 0; i < singleMoves.size(); i++) {
+		Move move;
+		std::cout << "I: " << i << ", ";
+		move.init(singleMoves[i]);
+		this -> moves.push_back(move);
+	}
 }

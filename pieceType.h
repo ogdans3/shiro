@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <string> 
 
-namespace pieceType {
+namespace Type {
 	enum PieceType {
 		KING,
 		QUEEN,

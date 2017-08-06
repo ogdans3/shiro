@@ -2,7 +2,7 @@
 
 class Piece {
 	bool inPlay;
-	pieceType::PieceType piece;
+	Type::PieceType piece;
 	int row [8] = {0, 0, 0, 0, 0, 0, 0, 0};
 	int col [8] = {0, 0, 0, 0, 0, 0, 0, 0};
 	public:
@@ -13,13 +13,13 @@ class Piece {
 };
 
 void Piece::init(std::string name, int row, int col) {
-	this -> piece = pieceType::get(name);
+	this -> piece = Type::get(name);
 	this -> row[row] = 1;
 	this -> col[col] = 1;
 }
 
 std::string Piece::getName() {
-	return pieceType::getName(this -> piece);
+	return Type::getName(this -> piece);
 }
 
 bool Piece::on(int row, int col) {

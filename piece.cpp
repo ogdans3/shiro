@@ -1,6 +1,8 @@
+#include "pieceType.h"
+
 class Piece {
-	std::string name;
 	bool inPlay;
+	pieceType::PieceType piece;
 	int row [8] = {0, 0, 0, 0, 0, 0, 0, 0};
 	int col [8] = {0, 0, 0, 0, 0, 0, 0, 0};
 	public:
@@ -11,13 +13,13 @@ class Piece {
 };
 
 void Piece::init(std::string name, int row, int col) {
-	this -> name = name;
+	this -> piece = pieceType::get(name);
 	this -> row[row] = 1;
 	this -> col[col] = 1;
 }
 
 std::string Piece::getName() {
-	return this -> name;
+	return pieceType::getName(this -> piece);
 }
 
 bool Piece::on(int row, int col) {
@@ -25,7 +27,7 @@ bool Piece::on(int row, int col) {
 }
 
 void Piece::print() {
-	std::cout << this -> name << ", ";
+	std::cout << this -> getName() << ", ";
 	for(int i = 0; i < 8; i++) {
 		if(row[i] == 1)
 			std::cout << i;

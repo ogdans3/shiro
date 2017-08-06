@@ -33,7 +33,7 @@ std::vector<std::vector<double> > dataset = {
 }
 
 int main(int argc, char const *argv[]) {
-	parse("./data/games/A00.pgn");
+	std::vector<Game> games = parse("./data/games/A00.pgn");
 	return 0;
 	auto weights = genWeights(layerSizes[0]);
 	train(weights, getData(), 1000);

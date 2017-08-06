@@ -30,10 +30,10 @@ std::vector<Game> parse(std::string filePath) {
 		if(isEmpty(line)){
 			std::ostringstream moves;
 			for(uint i = 0; i < lines.size(); i++) {
-				moves << lines[i];
+				moves << lines[i] << " ";
 			}
 			lines.clear();
-			if(moves.str() != "")
+			if(moves.str() != " ")
 				gameMoves.push_back(moves.str());
 		}
 	    if(gameMoves.size() > 0)

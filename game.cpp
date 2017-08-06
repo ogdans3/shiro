@@ -28,6 +28,6 @@ void Game::init(std::string moves) {
 	std::cout << "MOVES" << std::endl;
 	std::cout << moves << std::endl;
 
-	std::vector<std::string> singleMoves = split(moves, "(?!([0-9]+\\.))[a-zA-Z0-9#-]+ [a-zA-Z0-9#-]+");
+	std::vector<std::string> singleMoves = split(moves, "(?!([0-9]+\\.))[a-zA-Z0-9]+ [a-zA-Z0-9]+");
 	this -> board.init();
 }

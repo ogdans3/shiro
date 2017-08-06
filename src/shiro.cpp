@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "lib/eigen/Eigen/Dense"
-#include "lib/eigen/Eigen/Core"
+#include "../lib/eigen/Eigen/Dense"
+#include "../lib/eigen/Eigen/Core"
 
 #include "pgn-parser.cpp"
 #include "network.cpp"

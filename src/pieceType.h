@@ -11,7 +11,8 @@ namespace Type {
 		BISHOP,
 		KNIGHT,
 		ROOK,
-		PAWN
+		PAWN,
+		INVALID
 	};
 
 	std::string getName(PieceType piece) {
@@ -49,6 +50,7 @@ namespace Type {
 
 		if(piece == "" || piece == "p" || piece == "pawn")
 			return PieceType::PAWN;
+		return PieceType::INVALID;
 	}
 }
 

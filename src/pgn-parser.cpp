@@ -36,8 +36,6 @@ std::vector<Game> parse(std::string filePath) {
 			if(moves.str() != " ")
 				gameMoves.push_back(moves.str());
 		}
-	    if(gameMoves.size() > 0)
-		    break;
 	}
  	file.close();
 

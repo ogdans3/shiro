@@ -1,43 +1,5 @@
 #include "pieceType.h"
 
-class Move{
-	bool capture = false;
-	bool check = false;
-	bool checkmate = false;
-	bool promotion = false;
-	bool kingSideCastle = false;
-	bool queenSideCastle = false;
-	bool tie = false;
-	bool win = false;
-	bool loss = false;
-	bool ambiguous = false;
-
-	Type::PieceType promotedTo = Type::PieceType::INVALID;
-	Type::PieceType piece = Type::PieceType::INVALID;
-	int toRow [8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	int toCol [8] = {0, 0, 0, 0, 0, 0, 0, 0};	
-	int fromRow [8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	int fromCol [8] = {0, 0, 0, 0, 0, 0, 0, 0};	
-
-	void parse(std::string);
-	void parseName(std::string &);
-	void parseMove(std::string &);
-	void parseAmbiguity(std::string &);
-	void parseIsTie(std::string &);
-	void parseIsWin(std::string &);
-	void parseIsLoss(std::string &);
-	void parseIsCheck(std::string &);
-	void parseIsCheckMate(std::string &);
-	void parseIsCapture(std::string &);
-	void parseIsPromotion(std::string &);
-	void parseIsKingSideCastle(std::string &);
-	void parseIsQueenSideCastle(std::string &);
-
-	public:
-		Move(std::string);
-};
-
-
 void Move::parseName(std::string & move) {
 	std::string pieceName;
 	if(std::isupper((unsigned char) move[0])) {
@@ -64,9 +26,7 @@ void Move::parseIsQueenSideCastle(std::string & move) {
 }
 
 void Move::parseMove(std::string & move) {
-	std::cout << "Not implemented" << std::endl;
-	std::cout << move << std::endl;
-
+	if(move == "0-1" || move == "1-0")
 	if(move.size() <= 1){
 	    throw std::invalid_argument("Move size was <= 1 must atleast contain row and column of target position, " + move);
 	}
@@ -81,8 +41,8 @@ void Move::parseMove(std::string & move) {
 	if(toCol < 0 || toCol > 7) {
 	    throw std::invalid_argument("Last col was not bounded to between a and h, " + move);		
 	}
-	this -> toRow[toRow] = 1;
-	this -> toCol[toCol] = 1;
+	this -> toRow = toRow;
+	this -> toCol = toCol;
 	this -> parseAmbiguity(move);
 }
 
@@ -95,7 +55,7 @@ void Move::parseAmbiguity(std::string & move) {
 
 	int fromRow = (move.back() - '1');
 	if(fromRow > 0 && fromRow < 8) {
-		this -> fromRow[fromRow] = 1;
+		this -> fromRow = fromRow;
 		return;
 	}
 
@@ -104,7 +64,7 @@ void Move::parseAmbiguity(std::string & move) {
 	if(fromCol < 0 || fromCol > 7) {
 	    throw std::invalid_argument("From col was not bounded to between 1 and 8, " + move);		
 	}
-	this -> fromCol[fromCol] = 1;
+	this -> fromCol = fromCol;
 
 	//This has never been tested
 	if(move.size() == 0)
@@ -114,7 +74,7 @@ void Move::parseAmbiguity(std::string & move) {
 	if(fromRow < 0 || fromRow > 7) {
 	    throw std::invalid_argument("From row was not bounded to between 1 and 8, " + move);		
 	}
-	this -> fromRow[fromRow] = 1;
+	this -> fromRow = fromRow;
 }
 
 void Move::parseIsCheck(std::string & move) {
@@ -143,7 +103,7 @@ void Move::parseIsPromotion(std::string & move) {
 }
 
 void Move::parseIsTie(std::string & move) {
-	if(move == "0-0") {
+	if(move == "0-0" || move == "1/2-1/2") {
 		this -> tie = true;
 		move = "";		
 	}
@@ -164,6 +124,7 @@ void Move::parseIsLoss(std::string & move) {
 }
 
 void Move::parse(std::string move) {
+	this -> str = std::string(move);
 	this -> parseIsTie(move);
 	this -> parseIsWin(move);
 	this -> parseIsLoss(move);
@@ -189,7 +150,7 @@ void Move::parse(std::string move) {
 
 }
 
-Move::Move(std::string move) {
-	std::cout << move << std::endl;
+Move::Move(std::string move, bool white) {
 	this -> parse(move);
+	this -> whiteMove = white;
 }

@@ -1,5 +1,5 @@
-#ifndef STUDENT_H
-#define STUDENT_H
+#ifndef PIECETYPE
+#define PIECETYPE
 
 #include <algorithm>
 #include <string> 

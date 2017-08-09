@@ -29,6 +29,13 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> generateData() {
 		dispose();
 		games ++;
 		game = parseGame(files[file]);
+		if(game == NULL){
+			file ++;
+			if(file > files.size() - 1) {
+				throw std::out_of_range("All files finished");
+			}
+			throw std::out_of_range("File finished");
+		}
 	}
 
 	std::vector<Piece*> pieces = game -> getState();

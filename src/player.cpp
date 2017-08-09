@@ -17,9 +17,10 @@ class Player {
 		void init(bool white);
 		std::string getPieceName(int, int);
 		Piece* getPiece(int, int);
-		std::pair<int, int> apply(Move, Player);
+		std::pair<int, int> apply(Move*, Player*);
 		void newPiece(Type::PieceType, int, int);
 		void reset();
+		void dispose();
 		std::vector<Piece *> getAllPieces();
 };
 
@@ -139,11 +140,11 @@ std::vector<Piece*> Player::getPieces(Type::PieceType type, int row, int col) {
 	return filtered;
 }
 
-std::pair<int, int> Player::apply(Move move, Player other) {
-	if(move.endOfGame())
+std::pair<int, int> Player::apply(Move* move, Player* other) {
+	if(move -> endOfGame())
 		return std::make_pair(-1, -1);
-	int moveIndex = move.index;
-	if(move.kingSideCastle) {
+	int moveIndex = move -> index;
+	if(move -> kingSideCastle) {
 		std::vector<Piece*> pieces = this -> getPieces(Type::PieceType::KING);
 		std::vector<Piece*> rooks = this -> getPieces(Type::PieceType::ROOK);
 
@@ -166,7 +167,7 @@ std::pair<int, int> Player::apply(Move move, Player other) {
 		}
 		return pair;
 	}
-	if(move.queenSideCastle) {
+	if(move -> queenSideCastle) {
 		std::vector<Piece*> pieces = this -> getPieces(Type::PieceType::KING);
 		std::vector<Piece*> rooks = this -> getPieces(Type::PieceType::ROOK);
 
@@ -190,36 +191,44 @@ std::pair<int, int> Player::apply(Move move, Player other) {
 		return pair;
 	}
 
-	std::vector<Piece* > pieces = this -> getPieces(move.piece);
-	if(move.ambiguous) {
-		pieces = this -> getPieces(move.piece, move.fromRow, move.fromCol);
+	std::vector<Piece* > pieces = this -> getPieces(move -> piece);
+	if(move -> ambiguous) {
+		pieces = this -> getPieces(move -> piece, move -> fromRow, move -> fromCol);
 	}
 	for(Piece* piece: pieces) {
 		if(!(piece -> getInPlay()))
 			continue;
-		bool canMove = piece -> canMoveTo(move.toRow, move.toCol, this -> isWhite,this -> getAllPieces(), other.getAllPieces(), moveIndex);
+		bool canMove = piece -> canMoveTo(move -> toRow, move -> toCol, this -> isWhite,this -> getAllPieces(), other -> getAllPieces(), moveIndex);
 		//piece -> print();
 		//std::cout << move.str << std::endl;
 		//std::cout << "Canmove: " << canMove << std::endl;
 		if(canMove){
-			if(move.capture) {
-				Piece* capturedPiece = other.getPiece(move.toRow, move.toCol);
+			if(move -> capture) {
+				Piece* capturedPiece = other -> getPiece(move -> toRow, move -> toCol);
 				if(capturedPiece == NULL) {
 					if(this -> isWhite)
-						capturedPiece = other.getPiece(move.toRow - 1, move.toCol);
+						capturedPiece = other -> getPiece(move -> toRow - 1, move -> toCol);
 					else
-						capturedPiece = other.getPiece(move.toRow + 1, move.toCol);
+						capturedPiece = other -> getPiece(move -> toRow + 1, move -> toCol);
 				}
 				capturedPiece -> setInPlay(false);
 			}
 			std::pair<int, int> pair = std::make_pair(piece -> getRow(), piece -> getCol());
-			piece -> apply(move.toRow, move.toCol, moveIndex);
-			if(move.promotion) {
-				Type::PieceType promotedTo = move.promotedTo;
-				this -> newPiece(promotedTo, move.toRow, move.toCol);	
+			piece -> apply(move -> toRow, move -> toCol, moveIndex);
+			if(move -> promotion) {
+				Type::PieceType promotedTo = move -> promotedTo;
+				this -> newPiece(promotedTo, move -> toRow, move -> toCol);	
 				piece -> setInPlay(false);
 			}
 			return pair;
 		};
+	}
+}
+
+void Player::dispose() {
+	std::vector<Piece*> pieces = this -> getAllPieces();
+	for(int i = 0; i < pieces.size(); i++) {
+		pieces[i] -> dispose();
+		delete pieces[i];
 	}
 }

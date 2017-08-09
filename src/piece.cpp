@@ -76,3 +76,5 @@ bool Piece::getInPlay() {
 	return this -> inPlay;
 }
 
+void Piece::dispose() {}
+

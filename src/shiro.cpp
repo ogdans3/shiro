@@ -15,9 +15,18 @@ Game* game;
 int games = 1;
 std::vector<std::string> files;
 int file = 0;
+
+void dispose() {
+	if(game == NULL)
+		return;
+	game -> dispose();
+	delete game;
+}
+
 std::pair<Eigen::VectorXd, Eigen::VectorXd> generateData() {
 	if(game == NULL) {
 		std::cout << files[file];
+		dispose();
 		games ++;
 		game = parseGame(files[file]);
 	}
@@ -26,6 +35,7 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> generateData() {
 	Move* move = game -> getNextMove();
 	if(move == NULL || move -> endOfGame()) {
 		std::cout << files[file];
+		dispose();
 		games ++;
 		game = parseGame(files[file]);
 		if(game == NULL) {

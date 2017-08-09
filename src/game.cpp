@@ -5,7 +5,7 @@
 
 class Game {
 	Board board;
-	std::vector<Move> moves;
+	std::vector<Move*> moves;
 	int currentMove = 0;
 	public:
 		void init(std::string moves);
@@ -14,6 +14,7 @@ class Game {
 		std::vector<Piece*> getState();
 		void print();
 		Move* getNextMove();
+		bool dispose();
 };
 
 void Game::print() {
@@ -23,7 +24,7 @@ Move* Game::getNextMove() {
 	if(this -> currentMove >= this -> moves.size() - 1) {
 		return NULL;
 	}
-	return & this -> moves[this -> currentMove];
+	return this -> moves[this -> currentMove];
 }
 std::vector<Piece*> Game::getState() {
 	return this -> board.getAllPieces();
@@ -52,7 +53,7 @@ void Game::init(std::string moves) {
 		if(singleMoves[i].find("$") != std::string::npos) {
 			continue;
 		}
-		Move move(singleMoves[i], count % 2 == 0, count);
+		Move* move = new Move(singleMoves[i], count % 2 == 0, count);
 		this -> moves.push_back(move);
 		count ++;
 	}
@@ -79,4 +80,12 @@ void Game::play() {
 			break;
 		}
 	}
+}
+
+bool Game::dispose() {
+	for(uint i = 0; i < this -> moves.size(); i++) {
+		delete this -> moves[i];
+	}
+	this -> board.dispose();
+	return true;
 }

@@ -4,40 +4,43 @@
 #include "move.h"
 
 class Board {
-	Player white;
-	Player black;
+	Player* white;
+	Player* black;
 	public:
 		void init();
 		void print();
-		std::pair<int, int> apply(Move);
+		std::pair<int, int> apply(Move*);
 		void reset();
+		void dispose();
 		std::vector<Piece*> getAllPieces();
 };
 
 void Board::init() {
-	this -> white.init(true);
-	this -> black.init(false);
+	this -> white = new Player();
+	this -> black = new Player();
+	this -> white -> init(true);
+	this -> black -> init(false);
 }
 
 std::vector<Piece*> Board::getAllPieces() {
 	std::vector<Piece*> pieces;
-	std::vector<Piece*> white = this -> white.getAllPieces();
-	std::vector<Piece*> black = this -> black.getAllPieces();
+	std::vector<Piece*> white = this -> white -> getAllPieces();
+	std::vector<Piece*> black = this -> black -> getAllPieces();
 
 	pieces.insert(pieces.end(), white.begin(), white.end());
 	pieces.insert(pieces.end(), black.begin(), black.end());
 	return pieces;
 }
 
-std::pair<int, int> Board::apply(Move move) {
-	if(move.whiteMove)
-		return this -> white.apply(move, this -> black);
-	return this -> black.apply(move, this -> white);
+std::pair<int, int> Board::apply(Move* move) {
+	if(move -> whiteMove)
+		return this -> white -> apply(move, this -> black);
+	return this -> black -> apply(move, this -> white);
 }
 
 void Board::reset() {
-	this -> white.reset();
-	this -> black.reset();
+	this -> white -> reset();
+	this -> black -> reset();
 }
 
 void Board::print() {
@@ -47,8 +50,8 @@ void Board::print() {
 		board << i + 1 << " ";
 		for(int j = 0; j < 8; j++) {
 			std::string piece, whitePiece, blackPiece;
-			whitePiece = this -> white.getPieceName(i, j);
-			blackPiece = this -> black.getPieceName(i, j);
+			whitePiece = this -> white -> getPieceName(i, j);
+			blackPiece = this -> black -> getPieceName(i, j);
 			piece = whitePiece == "" ? blackPiece : whitePiece; 
 			board << (piece == "" ? " " : piece);
 		}
@@ -56,4 +59,11 @@ void Board::print() {
 	}
 	board << std::endl << "  abcdefgh  " << std::endl;
 	std::cout << board.str();
+}
+
+void Board::dispose() {
+	this -> white -> dispose();
+	this -> black -> dispose();
+	delete this -> white;
+	delete this -> black;
 }

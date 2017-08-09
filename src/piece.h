@@ -25,6 +25,7 @@ class Piece {
 		int getCol(){return this -> col;};
 		bool canMoveTo(int, int, bool, std::vector<Piece*>, std::vector<Piece*>, int);
 		Type::PieceType getType();
+		void dispose();
 };
 
 #include "piece.cpp"

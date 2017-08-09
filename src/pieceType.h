@@ -6,28 +6,32 @@
 
 namespace Type {
 	enum PieceType {
-		KING,
 		QUEEN,
 		BISHOP,
 		KNIGHT,
 		ROOK,
 		PAWN,
+		KING,
 		INVALID
 	};
 
 	std::string getName(PieceType piece) {
-		if(piece == PieceType::KING)
-			return "K";
-		if(piece == PieceType::QUEEN)
-			return "Q";
-		if(piece == PieceType::BISHOP)
-			return "B";
-		if(piece == PieceType::KNIGHT)
-			return "N";
-		if(piece == PieceType::ROOK)
-			return "R";
-		if(piece == PieceType::PAWN)
-			return "P";
+		switch(piece) {
+			case PieceType::KING:
+				return "K";
+			case PieceType::QUEEN:
+				return "Q";
+			case PieceType::BISHOP:
+				return "B";
+			case PieceType::KNIGHT:
+				return "N";
+			case PieceType::ROOK:
+				return "R";
+			case PieceType::PAWN:
+				return "P";
+			default:
+				return "I"; //Invalid
+		}
 	}
 
 	PieceType get(std::string piece) {

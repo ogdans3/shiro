@@ -6,10 +6,28 @@
 class Game {
 	Board board;
 	std::vector<Move> moves;
+	int currentMove = 0;
 	public:
 		void init(std::string moves);
 		void play();
+		std::pair<int, int> nextMove();
+		std::vector<Piece*> getState();
+		void print();
+		Move* getNextMove();
 };
+
+void Game::print() {
+	this -> board.print();
+}
+Move* Game::getNextMove() {
+	if(this -> currentMove >= this -> moves.size() - 1) {
+		return NULL;
+	}
+	return & this -> moves[this -> currentMove];
+}
+std::vector<Piece*> Game::getState() {
+	return this -> board.getAllPieces();
+}
 
 std::vector<std::string> split(std::string s, std::string regexp) {
 	std::regex e (regexp);
@@ -26,14 +44,24 @@ std::vector<std::string> split(std::string s, std::string regexp) {
 
 void Game::init(std::string moves) {
 	this -> board.init();
-
-	std::vector<std::string> singleMoves = split(moves, "(?!([0-9]+\\.))[a-zA-Z0-9+#=/\\-]+");
+	
+	std::vector<std::string> singleMoves = split(moves, "(?!([0-9]+\\.))[a-zA-Z0-9+#=\\$/\\-]+");
+	int count = 0;
 	for(uint i = 0; i < singleMoves.size(); i++) {
-		std::cout << singleMoves[i] << std::endl;
-		Move move(singleMoves[i], i % 2 == 0);
+		//This should ignore NAGs
+		if(singleMoves[i].find("$") != std::string::npos) {
+			continue;
+		}
+		Move move(singleMoves[i], count % 2 == 0, count);
 		this -> moves.push_back(move);
+		count ++;
 	}
-	this -> play();
+}
+
+std::pair<int, int> Game::nextMove() {
+	std::pair<int, int> from = this -> board.apply(this -> moves[this -> currentMove]);
+	this -> currentMove ++;
+	return from;
 }
 
 void Game::play() {
@@ -44,7 +72,7 @@ void Game::play() {
 		if(c == 10) {
 			if(i == this -> moves.size() - 1)
 				break;
-			this -> board.apply(this -> moves[i]);
+			this -> nextMove();
 			this -> board.print();
 			i ++;
 		}else if(c == 27) {

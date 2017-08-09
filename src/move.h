@@ -17,7 +17,8 @@ class Move{
 	void parseIsQueenSideCastle(std::string &);
 
 	public:
-		Move(std::string, bool);
+		Move(std::string, bool, int);
+		bool endOfGame();
 		bool whiteMove = false;
 		bool capture = false;
 		bool check = false;
@@ -31,12 +32,13 @@ class Move{
 		bool win = false;
 		bool loss = false;
 
+		int index = -1;
 		std::string str = "";
 
-		int toRow = 0;
-		int toCol = 0;
-		int fromRow = 0;
-		int fromCol = 0;
+		int toRow = -1;
+		int toCol = -1;
+		int fromRow = -1;
+		int fromCol = -1;
 
 		Type::PieceType promotedTo = Type::PieceType::INVALID;
 		Type::PieceType piece = Type::PieceType::INVALID;

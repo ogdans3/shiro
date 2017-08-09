@@ -5,37 +5,79 @@
 #include "../lib/eigen/Eigen/Core"
 
 #include "pgn-parser.cpp"
+
+const int numLayers = 7;
+const int layerSizes [numLayers] = {704, 800, 1000, 1000, 500, 100, 36};
+const double learningRate = 0.1;
 #include "network.cpp"
 
-std::vector<std::pair<Eigen::VectorXd, Eigen::VectorXd> > getData() {
-std::vector<std::vector<double> > dataset = {
-	{2.7810836,2.550537003,0},
-	{1.465489372,2.362125076,0},
-	{3.396561688,4.400293529,0},
-	{1.38807019,1.850220317,0},
-	{3.06407232,3.005305973,0},
-	{7.627531214,2.759262235,1},
-	{5.332441248,2.088626775,1},
-	{6.922596716,1.77106367,1},
-	{8.675418651,-0.242068655,1},
-	{7.673756466,3.508563011,1}};
-
-	std::vector<std::pair<Eigen::VectorXd, Eigen::VectorXd> > data;
-
-	for(uint i = 0; i < dataset.size(); i++) {
-		Eigen::VectorXd x1(layerSizes[0]);
-		Eigen::VectorXd y1(layerSizes[numLayers - 1]);
-		x1 << dataset[i][0], dataset[i][1];
-		y1 << dataset[i][2];
-		data.push_back(std::make_pair(x1, y1));
+Game* game;
+int games = 1;
+std::vector<std::string> files;
+int file = 0;
+std::pair<Eigen::VectorXd, Eigen::VectorXd> generateData() {
+	if(game == NULL) {
+		std::cout << files[file];
+		games ++;
+		game = parseGame(files[file]);
 	}
-	return data;
+
+	std::vector<Piece*> pieces = game -> getState();
+	Move* move = game -> getNextMove();
+	if(move == NULL || move -> endOfGame()) {
+		std::cout << files[file];
+		games ++;
+		game = parseGame(files[file]);
+		if(game == NULL) {
+			file ++;
+			if(file > files.size() - 1) {
+				throw std::out_of_range("All files finished");
+			}
+			throw std::out_of_range("File finished");
+		}
+		throw std::runtime_error("Game finished");
+	}
+//	std::cout << files[file] << " Game: " << games << " Move: " << move -> index << ". " << move -> str << std::endl;
+
+	Eigen::VectorXd input = Eigen::VectorXd::Zero((pieces.size()) * 22);
+	int i = 0;
+	for(Piece* piece: pieces) {
+		int type = piece -> getType();
+		int row = piece -> getRow();
+		int col = piece -> getCol();
+		int offset = 22 * i;
+		input[offset + type] = 1;
+		input[offset + 6 + row] = 1;
+		input[offset + 6 + 8 + col] = 1;
+		i ++;
+	}
+	
+	//Create 16 vector elements for row, column of where the piece is
+	//Create 16 vector elements for row, column of where the piece should be moved
+	//Create 4 vector elements for promoting: queen, bishop, knight, rook
+	Eigen::VectorXd out = Eigen::VectorXd::Zero(36);
+
+	std::pair<int, int> from = game -> nextMove();
+//	game -> print();
+	out[from.first] = 1;
+	out[8 + from.second] = 1;
+	
+	out[16 + move -> toRow] = 1;
+	out[8 + 16 + move -> toCol] = 1;
+
+	if(move -> promotion) {
+		out[move -> promotedTo] = 1;
+	}
+	return std::make_pair(input, out);
 }
 
 int main(int argc, char const *argv[]) {
-	std::vector<Game> games = parse("./data/games/A00.pgn");
-	return 0;
+	for(int i = 1; i < argc; i++) {
+		files.push_back(std::string(argv[i]));
+	}
+//	game = parseGame("data/games/test.pgn");
+//	game -> play();
 	auto weights = genWeights(layerSizes[0]);
-	train(weights, getData(), 1000);
+	train(weights, generateData, 1);
 	return 0;
 }

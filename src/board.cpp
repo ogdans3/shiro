@@ -9,7 +9,9 @@ class Board {
 	public:
 		void init();
 		void print();
-		void apply(Move);
+		std::pair<int, int> apply(Move);
+		void reset();
+		std::vector<Piece*> getAllPieces();
 };
 
 void Board::init() {
@@ -17,10 +19,25 @@ void Board::init() {
 	this -> black.init(false);
 }
 
-void Board::apply(Move move) {
+std::vector<Piece*> Board::getAllPieces() {
+	std::vector<Piece*> pieces;
+	std::vector<Piece*> white = this -> white.getAllPieces();
+	std::vector<Piece*> black = this -> black.getAllPieces();
+
+	pieces.insert(pieces.end(), white.begin(), white.end());
+	pieces.insert(pieces.end(), black.begin(), black.end());
+	return pieces;
+}
+
+std::pair<int, int> Board::apply(Move move) {
 	if(move.whiteMove)
 		return this -> white.apply(move, this -> black);
 	return this -> black.apply(move, this -> white);
+}
+
+void Board::reset() {
+	this -> white.reset();
+	this -> black.reset();
 }
 
 void Board::print() {
@@ -38,7 +55,5 @@ void Board::print() {
 		board << " " << (8 - i) << std::endl;
 	}
 	board << std::endl << "  abcdefgh  " << std::endl;
-	std::string b = board.str();
-	std::reverse(b.begin(), b.end());
 	std::cout << board.str();
 }

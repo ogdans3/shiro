@@ -1,6 +1,3 @@
-const int numLayers = 9;
-const int layerSizes [numLayers] = {2, 40, 100, 200, 1000, 200, 100, 40, 1};
-const double learningRate = 0.5;
 Eigen::VectorXd deltas [numLayers] = {};
 
 typedef std::vector<Eigen::MatrixXd> Weights;
@@ -54,21 +51,41 @@ void update_weights(Weights &weights, std::vector<Eigen::VectorXd> outputs, Eige
 	}
 }
 
-Weights train(Weights weights, std::vector<std::pair<Eigen::VectorXd, Eigen::VectorXd> > data, int epochs) {
+Weights train(Weights weights, std::pair<Eigen::VectorXd, Eigen::VectorXd> (*f)(), int epochs) {
 	std::vector<Eigen::VectorXd> outputs(numLayers);
-	for(int q = 0; q < epochs; q++) {
-		double error = 0;
-		for(uint i = 0; i < data.size(); i++) {	
-			Eigen::VectorXd input = data[i].first;
-			Eigen::VectorXd expected = data[i].second;
-			
-			forward(weights, input, outputs);
-			backward(weights, expected, outputs);
-			update_weights(weights, outputs, input);
-
-			error += (expected - outputs[numLayers - 1]).squaredNorm();
+	double error = 0;
+	std::pair<Eigen::VectorXd, Eigen::VectorXd> data;
+	int game = 0;
+	while(true) {
+		try{
+			data = (*f)();
+		}catch(std::runtime_error e){
+			game ++;
+			std::cout << "  Game: " << game << ", " << "LR: " << learningRate << ", " << "Error: " << error << std::endl;
+			error = 0;
+			continue;
+		}catch(const std::out_of_range & e){
+			std::string message = e.what();
+			if(message == "File finished") {
+				game ++;
+				std::cout << "  Game: " << game << ", " << "LR: " << learningRate << ", " << "Error: " << error << std::endl;
+				std::cout << "Finished the game file" << std::endl;
+				error = 0;
+				continue;
+			}else if(message == "All files finished") {
+				std::cout << "  Game: " << game << ", " << "LR: " << learningRate << ", " << "Error: " << error << std::endl;
+				std::cout << "Finished all the game files" << std::endl;				
+			}
+			break;
 		}
-		std::cout << "Epoch: " << q << ", " << "LR: " << learningRate << ", " << "Error: " << error << std::endl;
+		Eigen::VectorXd input = data.first;
+		Eigen::VectorXd expected = data.second;
+
+//		forward(weights, input, outputs);
+//		backward(weights, expected, outputs);
+//		update_weights(weights, outputs, input);
+
+//		error += (expected - outputs[numLayers - 1]).squaredNorm();
 	}
 	return weights;
 }

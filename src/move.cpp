@@ -26,7 +26,6 @@ void Move::parseIsQueenSideCastle(std::string & move) {
 }
 
 void Move::parseMove(std::string & move) {
-	if(move == "0-1" || move == "1-0")
 	if(move.size() <= 1){
 	    throw std::invalid_argument("Move size was <= 1 must atleast contain row and column of target position, " + move);
 	}
@@ -39,7 +38,7 @@ void Move::parseMove(std::string & move) {
 	    throw std::invalid_argument("Last row was not bounded to between 1 and 8, " + move);		
 	}
 	if(toCol < 0 || toCol > 7) {
-	    throw std::invalid_argument("Last col was not bounded to between a and h, " + move);		
+	    throw std::invalid_argument("Last col was not bounded to between a and h, " + move);
 	}
 	this -> toRow = toRow;
 	this -> toCol = toCol;
@@ -54,7 +53,7 @@ void Move::parseAmbiguity(std::string & move) {
 	this -> ambiguous = true;
 
 	int fromRow = (move.back() - '1');
-	if(fromRow > 0 && fromRow < 8) {
+	if(fromRow > -1 && fromRow < 8) {
 		this -> fromRow = fromRow;
 		return;
 	}
@@ -102,10 +101,18 @@ void Move::parseIsPromotion(std::string & move) {
 	}
 }
 
+bool Move::endOfGame() {
+	if(this -> tie || this -> win || this -> loss) {
+		return true;
+	}
+	return false;
+}
+
+
 void Move::parseIsTie(std::string & move) {
 	if(move == "0-0" || move == "1/2-1/2") {
 		this -> tie = true;
-		move = "";		
+		move = "";
 	}
 }
 
@@ -131,17 +138,17 @@ void Move::parse(std::string move) {
 	if(this -> tie || this -> win || this -> loss)
 		return;
 
+	this -> parseIsCheck(move);
+	this -> parseIsCheckMate(move);
+	this -> parseIsCapture(move);
+	this -> parseIsPromotion(move);
+
 	this -> parseIsKingSideCastle(move);
 	this -> parseIsQueenSideCastle(move);
 	if(this -> kingSideCastle || this -> queenSideCastle)
 		return;
 
 	this -> parseName(move);
-
-	this -> parseIsCheck(move);
-	this -> parseIsCheckMate(move);
-	this -> parseIsCapture(move);
-	this -> parseIsPromotion(move);
 
 	this -> parseMove(move);
 
@@ -150,7 +157,8 @@ void Move::parse(std::string move) {
 
 }
 
-Move::Move(std::string move, bool white) {
+Move::Move(std::string move, bool white, int index) {
 	this -> parse(move);
+	this -> index = index;
 	this -> whiteMove = white;
 }

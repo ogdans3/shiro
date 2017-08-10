@@ -11,7 +11,6 @@
 int bracketCount = 0;
 int parenthesisCount = 0;
 int squareBracketCount = 0;
-bool waitForEndOfLine = false;
 bool hasSetup(std::string s){
 	if(s == "[SetUp \"1\"]")
 		return true;
@@ -25,6 +24,7 @@ bool hasSetup(std::string s){
 	return false;
 }
 
+bool waitForEndOfLine = false;
 std::string removeStuff(std::string s) {
 	//std::cout << bracketCount << ", " << parenthesisCount << ", " << squareBracketCount << ", " << waitForEndOfLine << std::endl;
 
@@ -62,12 +62,8 @@ std::string removeStuff(std::string s) {
 			continue;
 		}
 		if(c == ';') {
-			if(squareBracketCount == 0)
+			if(squareBracketCount == 0 && bracketCount == 0 && parenthesisCount == 0)
 				waitForEndOfLine = true;
-			continue;
-		}
-		if(c == '\r\n' || c == '\n') {
-			waitForEndOfLine = false;
 			continue;
 		}
 		if(	bracketCount == 0 && parenthesisCount == 0 && squareBracketCount == 0 && waitForEndOfLine == false) {

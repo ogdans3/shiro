@@ -4,6 +4,8 @@
 #include "../lib/eigen/Eigen/Dense"
 #include "../lib/eigen/Eigen/Core"
 
+int linesDone = 0;
+int skippedGames = 0;
 #include "pgn-parser.cpp"
 
 const int numLayers = 7;
@@ -15,6 +17,15 @@ Game* game;
 int games = 1;
 std::vector<std::string> files;
 int file = 0;
+
+void log(int game, double lr, double error){
+	std::cout << files[file] << " " << linesDone <<  " SkippedGames: " << skippedGames << " Game: " << game << ", LR: " << lr << ", Error: " << error << std::endl;
+}
+
+void log(int _linesRead, int _skippedGames) {
+	linesDone = _linesRead;
+	skippedGames = _skippedGames;
+}
 
 void dispose() {
 	if(game == NULL)
@@ -46,10 +57,10 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> generateData() {
 		games ++;
 		game = parseGame(files[file]);
 		if(game == NULL) {
-			file ++;
-			if(file > files.size() - 1) {
+			if(file >= files.size() - 1) {
 				throw std::out_of_range("All files finished");
 			}
+			file ++;
 			throw std::out_of_range("File finished");
 		}
 		throw std::runtime_error("Game finished");
@@ -95,6 +106,6 @@ int main(int argc, char const *argv[]) {
 //	game = parseGame("data/games/test.pgn");
 //	game -> play();
 	auto weights = genWeights(layerSizes[0]);
-	train(weights, generateData, 1);
+	train(weights, generateData, log);
 	return 0;
 }

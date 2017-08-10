@@ -52,7 +52,8 @@ std::string removeStuff(std::string s) {
 			continue;
 		}
 		if(c == '[') {
-			squareBracketCount ++;
+			if(squareBracketCount == 0)
+				squareBracketCount ++;
 			continue;
 		}
 		if(c == ']') {
@@ -91,7 +92,6 @@ bool isEndOfGame(std::string str) {
 	return false;
 }
 
-int linesDone = 0;
 std::string filePath = "";
 
 Game* parseGame(std::string _filePath) {

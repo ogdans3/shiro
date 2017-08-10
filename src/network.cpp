@@ -51,7 +51,7 @@ void update_weights(Weights &weights, std::vector<Eigen::VectorXd> outputs, Eige
 	}
 }
 
-Weights train(Weights weights, std::pair<Eigen::VectorXd, Eigen::VectorXd> (*f)(), int epochs) {
+Weights train(Weights weights, std::pair<Eigen::VectorXd, Eigen::VectorXd> (*f)(), void (*log)(int, double, double)) {
 	std::vector<Eigen::VectorXd> outputs(numLayers);
 	double error = 0;
 	std::pair<Eigen::VectorXd, Eigen::VectorXd> data;
@@ -61,19 +61,19 @@ Weights train(Weights weights, std::pair<Eigen::VectorXd, Eigen::VectorXd> (*f)(
 			data = (*f)();
 		}catch(std::runtime_error e){
 			game ++;
-			std::cout << "  Game: " << game << ", " << "LR: " << learningRate << ", " << "Error: " << error << std::endl;
+			(*log)(game, learningRate, error);
 			error = 0;
 			continue;
 		}catch(const std::out_of_range & e){
 			std::string message = e.what();
 			if(message == "File finished") {
+				(*log)(game, learningRate, error);
 				game ++;
-				std::cout << "  Game: " << game << ", " << "LR: " << learningRate << ", " << "Error: " << error << std::endl;
 				std::cout << "Finished the game file" << std::endl;
 				error = 0;
 				continue;
 			}else if(message == "All files finished") {
-				std::cout << "  Game: " << game << ", " << "LR: " << learningRate << ", " << "Error: " << error << std::endl;
+				(*log)(game, learningRate, error);
 				std::cout << "Finished all the game files" << std::endl;				
 			}
 			break;

@@ -51,12 +51,12 @@ std::string removeStuff(std::string s) {
 				parenthesisCount --;
 			continue;
 		}
-		if(c == '[') {
-			if(squareBracketCount == 0)
+		if(c == '[' && i == 0) {
+			if(squareBracketCount == 0 && bracketCount == 0 && parenthesisCount == 0)
 				squareBracketCount ++;
 			continue;
 		}
-		if(c == ']') {
+		if(c == ']' && i == s.size() - 1) {
 			if(squareBracketCount > 0)
 				squareBracketCount --;
 			continue;
@@ -87,7 +87,7 @@ bool isEndOfGame(std::string str) {
 		return true;
 	if(str.substr(str.size() - 3, str.size()) == "0-1")
 		return true;
-	if(str.size() > 7 && str.substr(str.size() - 7, str.size()) == "1/2-1/2")
+	if(str.size() >= 7 && str.substr(str.size() - 7, str.size()) == "1/2-1/2")
 		return true;
 	return false;
 }
